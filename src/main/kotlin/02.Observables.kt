@@ -1,11 +1,13 @@
 import io.reactivex.*
 import io.reactivex.disposables.Disposable
+import io.reactivex.subjects.PublishSubject
 import java.lang.IllegalStateException
 
-// 생산자는 데이터를 생산해서 전달하는 역할을 함
-// 소비자를 등록하는 방법 두 가지
 
 fun main() {
+
+    // 생산자는 데이터를 생산해서 전달하는 역할을 함
+    // 소비자를 등록하는 방법 두 가지
 
     // 1. Observer 방식
     // Observer 인터페이스를 구현한 객체를 Subscribe 해서 Consumer 를 추가
@@ -51,7 +53,7 @@ fun main() {
 
     // 여러가지 생산자
 
-    // Observable
+    // 1. Observable
     // - 0개 에서 N 개의 데이터를 전달하는 생산자
     // - 기본적인 생산자로 단 건(0 or 1)이 아니면 대부분 Observable 을 사용
     // - Observer 방식으로 Consumer 등록  Observer 를 구현하여 전달
@@ -70,7 +72,7 @@ fun main() {
     )
 
 
-    // Single
+    // 2. Single
     // - 오직 1개의 데이터를 전달하는 생산자
     // - HTTP GET Request 와 같이 결과가 1개의 데이터 or 실패인 경우 사용
     // - Observer 방식으로 Consumer 등록 시 SingleObserver 를 구현하여 전달
@@ -83,7 +85,7 @@ fun main() {
         )
 
 
-    // Completable
+    // 3. Completable
     // - 0개의 데이터를 전달하는 생산자
     // - DB 에 INSERT, UPDATE 와 같이 데이터가 필요 없이 성공 or 실패인 경우 사용
     // - Observer 방식으로 Consumer 등록 시시 CompletableObserver 를 구현하여 전달
@@ -96,7 +98,7 @@ fun main() {
         )
 
 
-    // Maybe
+    // 4. Maybe
     // - 0개 또는 1개 데이터를 전달하는 생산자
     // - 예, 아니오 선택과 같이 (둘 중 하나 + 예외 경우) 에 쓸 수 있음
     // - Observer 방식으로 Consumer 등록 시 MaybeObserver 를 구현하여 전달
@@ -109,8 +111,8 @@ fun main() {
             { println("onError") }
         )
 
-    
-    // Flowable
+
+    // 5. Flowable
     // - 데이터의 발행 속도가 구독자의 처리 속도보다 크게 빠를 때 사용 (BackPressure Issue)
     // - Observer 방식으로 Consumer 등록 시 FlowableSubscriber 를 구현하여 전달
     // - BackPressure Issue 를 처리하는 방법을 설정할 수 있음
@@ -123,5 +125,26 @@ fun main() {
             { println("onComplete") },
             { println("onSubscribe") }
         )
+
+
+    // Subjects 개념
+    // - Observable 과 Observer 의 성격을 둘 다 가지고 있음
+    // - 즉 Subscribe 를 달 수 있으며 동시에 onNext, onComplete 등을 달 수 있음
+
+    // 1. PublishSubject
+    // - 구독한 시점부터 새로운 데이터를 가져오는 Subject
+
+    val xSubject = PublishSubject.create<Int>()
+    xSubject.subscribe { println("첫번째 $it") }
+    xSubject.onNext(1)
+    Thread.sleep(1000L)
+    xSubject.subscribe { println("----두번째 $it") }
+    xSubject.onNext(2)
+    xSubject.onNext(3)
+    Thread.sleep(1000L)
+    xSubject.subscribe { println("********세번째 $it") }
+    xSubject.onNext(4)
+    xSubject.onComplete()
+
 }
 
