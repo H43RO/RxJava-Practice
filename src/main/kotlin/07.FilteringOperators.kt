@@ -40,4 +40,29 @@ fun main(){
     Observable.just(6, 4, 2)
         .ignoreElements()
         .subscribe(::println)
+
+
+    // 5. throttleFirst / throttleLast
+    // - 특정 시간동안 들어오는 데이터 중 첫번째 / 마지막 데이터만 전달
+
+    Observable.interval(0, 100, TimeUnit.MILLISECONDS)
+        .throttleLast(250, TimeUnit.MILLISECONDS)
+        .subscribe {
+            println(System.currentTimeMillis())
+            println(it)
+        }
+    Thread.sleep(1000)
+
+
+    // 6. skip/take
+    // - skip : 앞부터 n개의 데이터를 생략하고 전달
+    // - take : 앞부터 n개의 데이터만 전달
+    // - last, while, until 등 응용할 수 있음
+
+    Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        .take(9)
+        .skip(2)
+        .skipLast(2)
+        .takeLast(3)
+        .subscribe(::println)
 }
